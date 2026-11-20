@@ -8,5 +8,9 @@ export const contract = contractFromJson<Contract>(contractJson);
 
 export const db = postgres({
   contract,
-  url: process.env['DATABASE_URL']!,
+  // On Vercel, POSTGRES_PRISMA_URL is Neon's pooled URL with pgbouncer=true,
+  // which the driver needs (the plain pooled DATABASE_URL is rejected by
+  // PgBouncer for unsupported startup parameters). Locally it is unset, so
+  // fall back to DATABASE_URL.
+  url: process.env['POSTGRES_PRISMA_URL'] ?? process.env['DATABASE_URL']!,
 });

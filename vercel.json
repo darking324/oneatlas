@@ -1,1 +1,1 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"npm run db:init && npm run db:seed && npm run build"}
+{"$schema":"https://openapi.vercel.sh/vercel.json","buildCommand":"export DATABASE_URL=\"$DATABASE_URL_UNPOOLED\" POSTGRES_PRISMA_URL=\"$DATABASE_URL_UNPOOLED\"; npm run db:init && npm run db:seed && npm run build"}
