@@ -1,0 +1,69 @@
+// use prisma-8
+// OneAtlas — AI model discovery & intelligence platform.
+// Data is seeded from OpenRouter's public models endpoint
+// (https://openrouter.ai/api/v1/models) plus curated, vendor-published
+// benchmark scores (see prisma/seed.ts). No benchmark numbers are invented:
+// models without a sourced score simply have no BenchmarkScore row.
+
+model Lab {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  slug         String   @unique
+  website      String?
+  description  String?
+  founded      Int?
+  headquarters String?
+  models       Model[]
+  createdAt    DateTime @default(now()) @onCreate(now())
+  updatedAt    temporal.UpdatedAt
+}
+
+model Provider {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  website     String?
+  description String?
+  models      Model[]
+  createdAt   DateTime @default(now()) @onCreate(now())
+  updatedAt   temporal.UpdatedAt
+}
+
+model Model {
+  id                  Int              @id @default(autoincrement())
+  openRouterId        String           @unique
+  slug                String           @unique
+  name                String
+  description         String?
+  labId               Int?
+  lab                 Lab?             @relation(fields: [labId], references: [id])
+  providerId          Int?
+  provider            Provider?        @relation(fields: [providerId], references: [id])
+  type                String
+  modality            String?
+  contextLength       Int
+  inputPrice          Float
+  outputPrice         Float
+  maxCompletionTokens Int?
+  capabilities        String[]
+  inputModalities     String[]
+  outputModalities    String[]
+  huggingFaceId       String?
+  releaseDate         DateTime?
+  benchmarks          BenchmarkScore[]
+  createdAt           DateTime         @default(now()) @onCreate(now())
+  updatedAt           temporal.UpdatedAt
+}
+
+model BenchmarkScore {
+  id        Int      @id @default(autoincrement())
+  modelId   Int
+  model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  benchmark String
+  score     Float
+  source    String?
+  createdAt DateTime @default(now()) @onCreate(now())
+  updatedAt temporal.UpdatedAt
+
+  @@unique([modelId, benchmark])
+}
